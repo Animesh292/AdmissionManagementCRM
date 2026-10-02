@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { UserPlus, CheckCircle2, AlertCircle } from 'lucide-react';
 
@@ -13,8 +13,6 @@ const SeatAllocation = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
 
-    const API_BASE = 'http://localhost:3000/api';
-
     useEffect(() => {
         fetchInitialData();
     }, []);
@@ -22,8 +20,8 @@ const SeatAllocation = () => {
     const fetchInitialData = async () => {
         try {
             const [appsRes, programsRes] = await Promise.all([
-                axios.get(`${API_BASE}/applications/pending`),
-                axios.get(`${API_BASE}/programs`)
+                api.get('/api/applications/pending'),
+                api.get('/api/programs')
             ]);
             setApplications(appsRes.data);
             setPrograms(programsRes.data);
@@ -40,7 +38,7 @@ const SeatAllocation = () => {
             return;
         }
         try {
-            const res = await axios.get(`${API_BASE}/quotas/${programId}`);
+            const res = await api.get(`/api/quotas/${programId}`);
             setQuotas(res.data);
         } catch (error) {
             console.error("Error fetching quotas", error);
@@ -56,7 +54,7 @@ const SeatAllocation = () => {
 
         setLoading(true);
         try {
-            await axios.post('http://localhost:3000/admission/allocate-seat', {
+            await api.post('/admission/allocate-seat', {
                 applicationId: selectedApp,
                 programId: selectedProgram,
                 quotaId: selectedQuota

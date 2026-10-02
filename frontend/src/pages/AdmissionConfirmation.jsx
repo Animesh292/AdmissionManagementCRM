@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { CheckSquare, UserCheck, RefreshCcw } from 'lucide-react';
 
@@ -9,9 +9,6 @@ const AdmissionConfirmation = () => {
     const [actionLoading, setActionLoading] = useState(null);
     const [statusMessage, setStatusMessage] = useState(null);
 
-    const FETCH_URL = 'http://localhost:3000/api/dashboard/paid-admissions';
-    const CONFIRM_URL = 'http://localhost:3000/admission/confirm';
-
     useEffect(() => {
         fetchAdmissions();
     }, []);
@@ -19,7 +16,7 @@ const AdmissionConfirmation = () => {
     const fetchAdmissions = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(FETCH_URL);
+            const res = await api.get('/api/dashboard/paid-admissions');
             setAdmissions(res.data);
         } catch (error) {
             console.error("Error fetching paid admissions", error);
@@ -32,7 +29,7 @@ const AdmissionConfirmation = () => {
         setActionLoading(admissionId);
         setStatusMessage(null);
         try {
-            await axios.post(CONFIRM_URL, { admissionId });
+            await api.post('/admission/confirm', { admissionId });
             alert('Admission confirmed successfully!');
             fetchAdmissions(); // Refresh list
         } catch (error) {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { UserPlus, Send, CheckCircle } from 'lucide-react';
 
@@ -26,7 +26,7 @@ const RegisterApplicant = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await axios.post('http://localhost:3000/api/applications/register', formData);
+            await api.post('/api/applications/register', formData);
             setSuccess(true);
             setFormData({
                 firstName: '',

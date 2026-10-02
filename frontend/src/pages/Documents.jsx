@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { FileSearch, CheckCircle, XCircle, RefreshCcw } from 'lucide-react';
 
@@ -9,8 +9,6 @@ const Documents = () => {
     const [actionLoading, setActionLoading] = useState(null);
     const [selectedApplicant, setSelectedApplicant] = useState(null);
 
-    const API_BASE = 'http://localhost:3000/api/dashboard';
-
     useEffect(() => {
         fetchApplicants();
     }, []);
@@ -18,7 +16,7 @@ const Documents = () => {
     const fetchApplicants = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`${API_BASE}/pending-documents`);
+            const res = await api.get('/api/dashboard/pending-documents');
             setApplicants(res.data);
         } catch (error) {
             console.error("Error fetching pending documents", error);
@@ -32,7 +30,7 @@ const Documents = () => {
         const applicantId = selectedApplicant.id;
         setActionLoading(decision);
         try {
-            await axios.post('http://localhost:3000/api/applications/verify-documents', { applicantId, decision });
+            await api.post('/api/applications/verify-documents', { applicantId, decision });
             setSelectedApplicant(null);
             fetchApplicants();
         } catch (error) {

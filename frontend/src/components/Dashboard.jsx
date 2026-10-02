@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Users, FileText, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import StatsCard from './StatsCard';
@@ -12,16 +12,14 @@ const Dashboard = () => {
     const [feePending, setFeePending] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const API_BASE = 'http://localhost:3000/api/dashboard';
-
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const [intakeRes, quotaRes, docsRes, feesRes] = await Promise.all([
-                    axios.get(`${API_BASE}/intake-vs-admitted`),
-                    axios.get(`${API_BASE}/quota-status`),
-                    axios.get(`${API_BASE}/pending-documents`),
-                    axios.get(`${API_BASE}/fee-pending`)
+                    api.get('/api/dashboard/intake-vs-admitted'),
+                    api.get('/api/dashboard/quota-status'),
+                    api.get('/api/dashboard/pending-documents'),
+                    api.get('/api/dashboard/fee-pending')
                 ]);
 
                 setIntakeData(intakeRes.data);

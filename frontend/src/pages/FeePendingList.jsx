@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { CreditCard, CheckCircle, RefreshCcw } from 'lucide-react';
 
@@ -8,8 +8,6 @@ const FeePendingList = () => {
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(null);
 
-    const API_BASE = 'http://localhost:3000/api';
-
     useEffect(() => {
         fetchAdmissions();
     }, []);
@@ -17,7 +15,7 @@ const FeePendingList = () => {
     const fetchAdmissions = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(`http://localhost:3000/api/dashboard/fee-pending`);
+            const res = await api.get('/api/dashboard/fee-pending');
             setAdmissions(res.data);
         } catch (error) {
             console.error("Error fetching fee pending admissions", error);
@@ -29,7 +27,7 @@ const FeePendingList = () => {
     const handleMarkPaid = async (admissionId) => {
         setActionLoading(admissionId);
         try {
-            await axios.post(`${API_BASE}/fees/pay`, { admissionId });
+            await api.post('/api/fees/pay', { admissionId });
             fetchAdmissions(); // Refresh list
         } catch (error) {
             alert("Error updating payment: " + (error.response?.data?.error || error.message));

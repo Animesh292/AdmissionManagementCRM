@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { motion } from 'framer-motion';
 import { GraduationCap, Search, RefreshCcw, Calendar } from 'lucide-react';
 
@@ -8,8 +8,6 @@ const AdmittedStudents = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const API_URL = 'http://localhost:3000/api/dashboard/confirmed-admissions';
-
     useEffect(() => {
         fetchAdmittedStudents();
     }, []);
@@ -17,7 +15,7 @@ const AdmittedStudents = () => {
     const fetchAdmittedStudents = async () => {
         setLoading(true);
         try {
-            const res = await axios.get(API_URL);
+            const res = await api.get('/api/dashboard/confirmed-admissions');
             setAdmissions(res.data);
         } catch (error) {
             console.error("Error fetching admitted students", error);
