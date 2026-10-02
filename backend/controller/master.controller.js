@@ -17,7 +17,6 @@ async function getQuotasByProgram(req, res) {
             include: [{
                 model: Admission,
                 attributes: ["id"],
-                where: { confirmed: true },
                 required: false
             }]
         });

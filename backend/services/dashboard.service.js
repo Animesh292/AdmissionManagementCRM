@@ -30,7 +30,6 @@ async function getQuotaSeatStatus() {
             {
                 model: Admission,
                 attributes: ["id"],
-                where: { confirmed: true },
                 required: false
             }
         ]

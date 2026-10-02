@@ -17,6 +17,27 @@ const SeatAllocation = () => {
         fetchInitialData();
     }, []);
 
+    useEffect(() => {
+        if (!selectedProgram) return undefined;
+
+        const refreshQuotas = async () => {
+            try {
+                const res = await api.get(`/api/quotas/${selectedProgram}`);
+                setQuotas(res.data);
+            } catch (error) {
+                console.error("Error refreshing quotas", error);
+            }
+        };
+
+        const intervalId = setInterval(refreshQuotas, 15000);
+        window.addEventListener('focus', refreshQuotas);
+
+        return () => {
+            clearInterval(intervalId);
+            window.removeEventListener('focus', refreshQuotas);
+        };
+    }, [selectedProgram]);
+
     const fetchInitialData = async () => {
         try {
             const [appsRes, programsRes] = await Promise.all([
@@ -61,9 +82,14 @@ const SeatAllocation = () => {
             });
             setMessage({ type: 'success', text: 'Seat allocated successfully!' });
             setSelectedApp('');
-            setSelectedProgram('');
             setSelectedQuota('');
             fetchInitialData(); // Refresh apps list
+            try {
+                const quotasRes = await api.get(`/api/quotas/${selectedProgram}`);
+                setQuotas(quotasRes.data);
+            } catch (refreshError) {
+                console.error("Error refreshing quotas", refreshError);
+            }
         } catch (error) {
             setMessage({ type: 'error', text: error.response?.data?.message || 'Error allocating seat' });
         } finally {
