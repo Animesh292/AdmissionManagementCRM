@@ -1,3 +1,5 @@
+Live link - https://admissionmanagementcrm-frontend.onrender.com/
+
 I built a complete Admission Management CRM that manages the full admission lifecycle with strict seat control, workflow validation, and concurrency-safe seat allocation.
 
 Key Features:
