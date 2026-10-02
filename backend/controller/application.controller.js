@@ -1,15 +1,21 @@
-const { Application, Document, sequelize } = require('../models');
+const { Application, Document, sequelize, Admission } = require('../models');
 const { Op } = require('sequelize');
 
 async function getPendingApplications(req, res) {
     try {
-        // Applications that are REGISTERED or DOC_VERIFIED but not yet ALLOCATED
+        const existingAdmissions = await Admission.findAll({
+            attributes: ['applicantId'],
+            where: { applicantId: { [Op.ne]: null } },
+            raw: true,
+        });
+        const alreadyAllocatedIds = existingAdmissions.map(({ applicantId }) => applicantId);
+        const where = { status: 'DOC_VERIFIED' };
+        if (alreadyAllocatedIds.length > 0) {
+            where.id = { [Op.notIn]: alreadyAllocatedIds };
+        }
+
         const applications = await Application.findAll({
-            where: {
-                status: {
-                    [Op.in]: ['REGISTERED', 'DOC_VERIFIED']
-                }
-            }
+            where,
         });
         res.json(applications);
     } catch (error) {
@@ -20,25 +26,46 @@ async function getPendingApplications(req, res) {
 async function verifyDocuments(req, res) {
     const t = await sequelize.transaction();
     try {
-        const { applicantId } = req.body;
+        const { applicantId, decision } = req.body;
+        if (!applicantId || !['APPROVE', 'REJECT'].includes(decision)) {
+            throw new Error('Applicant and a valid review decision are required');
+        }
 
-        // 1. Update Application status
-        await Application.update(
-            { status: 'DOC_VERIFIED' },
-            { where: { id: applicantId }, transaction: t }
-        );
+        const application = await Application.findByPk(applicantId, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+        });
+        if (!application) {
+            throw new Error('Applicant not found');
+        }
+        if (application.status !== 'REGISTERED') {
+            throw new Error('This application is no longer awaiting document review');
+        }
 
-        // 2. Update all documents status for this applicant
+        const pendingDocument = await Document.findOne({
+            where: { applicantId, status: 'PENDING' },
+            transaction: t,
+        });
+        if (!pendingDocument) {
+            throw new Error('No pending documents found for this applicant');
+        }
+
+        const approved = decision === 'APPROVE';
         await Document.update(
-            { status: 'VERIFIED' },
-            { where: { applicantId: applicantId }, transaction: t }
+            { status: approved ? 'VERIFIED' : 'REJECTED' },
+            { where: { applicantId, status: 'PENDING' }, transaction: t }
         );
+        application.status = approved ? 'DOC_VERIFIED' : 'DOC_REJECTED';
+        await application.save({ transaction: t });
 
         await t.commit();
-        res.json({ message: 'Documents verified and application status updated successfully' });
+        res.json({
+            message: approved ? 'Documents approved successfully' : 'Documents rejected successfully',
+            decision,
+        });
     } catch (error) {
         await t.rollback();
-        res.status(500).json({ error: error.message });
+        res.status(error.message.includes('required') || error.message.includes('not found') || error.message.includes('pending') || error.message.includes('no longer') ? 400 : 500).json({ error: error.message });
     }
 }
 
@@ -59,14 +86,15 @@ async function registerApplication(req, res) {
             marks,
             status: 'REGISTERED'
         }, { transaction: t });
-
-        // 2. Create default Document record in PENDING status
-        await Document.create({
-            applicantId: application.id,
-            docName: 'General Documents (ID, Marks Cards)',
-            status: 'PENDING'
-        }, { transaction: t });
-
+      
+         await Document.create(
+           {
+             applicantId: application.id,
+             docName: "General Documents (ID, Marks Cards)",
+             status: "PENDING",
+           },
+           { transaction: t },
+         );
         await t.commit();
         res.status(201).json({ message: 'Application registered successfully', application });
     } catch (error) {

@@ -86,11 +86,11 @@ const RegisterApplicant = () => {
                     </div>
                     <div className="form-group">
                         <label>Email Address</label>
-                        <input type="email" name="email" value={formData.email} onChange={handleChange} required placeholder="john.doe@example.com" />
+                        <input type="email" name="email" value={formData.email} onChange={handleChange} required pattern="[A-Za-z0-9](?:[A-Za-z0-9._%+]|-)*@[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*(?:\.[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)+" title="Enter a valid email address, such as name@example.com." placeholder="john.doe@example.com" />
                     </div>
                     <div className="form-group">
                         <label>Phone Number</label>
-                        <input type="text" name="phone" value={formData.phone} onChange={handleChange} required placeholder="+91 9876543210" />
+                        <input type="tel" name="phone" value={formData.phone} onChange={handleChange} required pattern="(?:\+91(?: |-)?)?[6-9][0-9]{4}(?: |-)?[0-9]{5}" title="Enter a valid 10-digit Indian phone number, optionally with +91." placeholder="+91 9876543210" />
                     </div>
                     <div className="form-group">
                         <label>Category</label>
@@ -118,7 +118,7 @@ const RegisterApplicant = () => {
                     </div>
                     <div className="form-group">
                         <label>Marks (%)</label>
-                        <input type="number" step="0.01" name="marks" value={formData.marks} onChange={handleChange} required placeholder="85.50" />
+                        <input type="number" min="0" max="100" step="0.01" name="marks" value={formData.marks} onChange={handleChange} required placeholder="85.50" />
                     </div>
                     <div style={{ gridColumn: 'span 2', display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
                         <button type="submit" className="nav-item" disabled={loading} style={{ background: 'var(--primary)', color: 'white', padding: '0.75rem 2rem', width: 'auto' }}>
@@ -149,6 +149,7 @@ const RegisterApplicant = () => {
                     outline: none;
                     transition: border-color 0.2s;
                 }
+                select option { background-color: var(--bg-card); color: var(--text-main); }
                 input:focus, select:focus { border-color: var(--primary); }
                 input::placeholder { color: rgba(255, 255, 255, 0.2); }
             `}</style>

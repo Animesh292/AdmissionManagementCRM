@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const { application } = require('express');
 
 const Document = sequelize.define('Document', {
     id: {
@@ -17,7 +16,7 @@ const Document = sequelize.define('Document', {
         allowNull: false,
     },
     status: {
-        type: DataTypes.ENUM('PENDING', 'VERIFIED', 'SUBMITTED'),
+        type: DataTypes.ENUM('PENDING', 'VERIFIED', 'SUBMITTED', 'REJECTED'),
         defaultValue: 'PENDING',
     }
 }, {

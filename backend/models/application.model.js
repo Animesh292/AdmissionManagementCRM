@@ -35,6 +35,7 @@ const Application = sequelize.define("Application", {
     type: DataTypes.ENUM(
       "REGISTERED",
       "DOC_VERIFIED",
+      "DOC_REJECTED",
       "SEAT_ALLOCATED",
       "ADMISSION_CONFIRMED",
     ),
