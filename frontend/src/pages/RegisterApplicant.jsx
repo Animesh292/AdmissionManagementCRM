@@ -10,7 +10,7 @@ const RegisterApplicant = () => {
         email: '',
         phone: '',
         category: 'GM',
-        entryType: 'Regular',
+        entryType: 'REGULAR',
         quotaType: 'KCET',
         marks: ''
     });
@@ -34,7 +34,7 @@ const RegisterApplicant = () => {
                 email: '',
                 phone: '',
                 category: 'GM',
-                entryType: 'Regular',
+                entryType: 'REGULAR',
                 quotaType: 'KCET',
                 marks: ''
             });
@@ -104,8 +104,8 @@ const RegisterApplicant = () => {
                     <div className="form-group">
                         <label>Entry Type</label>
                         <select name="entryType" value={formData.entryType} onChange={handleChange}>
-                            <option value="Regular">Regular</option>
-                            <option value="Lateral">Lateral Entry</option>
+                            <option value="REGULAR">Regular</option>
+                            <option value="LATERAL">Lateral Entry</option>
                         </select>
                     </div>
                     <div className="form-group">

@@ -23,7 +23,7 @@ const Application = sequelize.define("Application", {
     type: DataTypes.ENUM("GM", "SC", "ST", "OBC"),
   },
   entryType: {
-    type: DataTypes.ENUM("Regular", "Lateral"),
+    type: DataTypes.ENUM("REGULAR", "LATERAL"),
   },
   quotaType: {
     type: DataTypes.ENUM("KCET", "COMEDK", "MANAGEMENT"),
